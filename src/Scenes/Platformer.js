@@ -53,7 +53,25 @@ class Platformer extends Phaser.Scene {
         // TODO: put water bubble particle effect here
         // It's OK to have it start running
         ////////////////////
-
+        
+        my.vfx.water = this.add.particles(0, 0, "kenny-particles", {
+            frame: ['circle_02.png'],
+            //x: {},
+            //y: {},
+            // TODO: Try: add random: true
+            //random: true,
+            scale: (Math.random() * 0.002 + 0.002) * 0.5,
+            // TODO: Try: maxAliveParticles: 8,
+            //maxAliveParticles: 1,
+            lifespan: 350,
+            // TODO: Try: gravityY: -400,
+            gravityY: -20,
+            alpha: {start: 1, end: 0.1}, 
+        });
+        //console.log(this.waterTiles[Math.floor(Math.random() * this.waterTiles.length)])
+        my.vfx.water.startFollow(this.waterTiles[Math.floor(Math.random() * this.waterTiles.length)], 0, 0, false);
+        console.log(my.vfx.water)
+        my.vfx.water.scale = 18.5
 
         // set up player avatar
         my.sprite.player = this.physics.add.sprite(30, 345, "platformer_characters", "tile_0000.png");
@@ -65,13 +83,37 @@ class Platformer extends Phaser.Scene {
         // TODO: create coin collect particle effect here
         // Important: make sure it's not running
 
+        my.vfx.coin = this.add.particles(0, 0, "kenny-particles", {
+            frame: ['magic_05.png'],
+            // TODO: Try: add random: true
+            //random: true,
+            scale: {start: 0.03, end: 0.1},
+            // TODO: Try: maxAliveParticles: 8,
+            //maxAliveParticles: 1,
+            lifespan: 350,
+            stopAfter: 1,
+            // TODO: Try: gravityY: -400,
+            gravityY: -400,
+            alpha: {start: 1, end: 0.1}, 
+        });
+
+        my.vfx.coin.stop();
+
 
         // Coin collision handler
         this.physics.add.overlap(my.sprite.player, this.coinGroup, (obj1, obj2) => {
-            obj2.destroy(); // remove coin on overlap
+
+            my.vfx.coin.startFollow(obj2, 0, 0, false);
+            my.vfx.coin.start();
+
+            //my.vfx.coin.setParticleSpeed(this.PARTICLE_VELOCITY, 0);
             ////////////////////
             // TODO: start the coin collect particle effect here
             ////////////////////
+            console.log("overlap")
+            obj2.destroy(); // remove coin on overlap
+            console.log("overlap complete")
+            //my.vfx.coin.stop();
 
         });
 
@@ -99,6 +141,7 @@ class Platformer extends Phaser.Scene {
     }
 
     update() {
+        my.vfx.water.startFollow(this.waterTiles[Math.floor(Math.random() * this.waterTiles.length)], 0, 0, false);
         if(cursors.left.isDown) {
             my.sprite.player.setAccelerationX(-this.ACCELERATION);
             my.sprite.player.resetFlip();
